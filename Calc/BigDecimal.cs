@@ -128,7 +128,7 @@ namespace Calc
 
         public static explicit operator double(BigDecimal value)
         {
-            return (double)value.Mantissa * Math.Pow(10, value.Exponent);
+            return double.Parse(value.ToString());
         }
 
         public static explicit operator float(BigDecimal value)
@@ -138,7 +138,7 @@ namespace Calc
 
         public static explicit operator decimal(BigDecimal value)
         {
-            return (decimal)value.Mantissa * (decimal)Math.Pow(10, value.Exponent);
+            return decimal.Parse(value.ToString());
         }
 
         public static explicit operator int(BigDecimal value)
