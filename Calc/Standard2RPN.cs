@@ -93,10 +93,12 @@ namespace Calc
         {
             if (b == 0) return 1;
             BigDecimal result = 1;
-            for (BigDecimal i = 1; i <= b; i++)
+            BigDecimal exp = Abs(b);
+            for (BigDecimal i = 1; i <= exp; i++)
             {
                 result *= a;
             }
+            if (b < 0) return 1 / result;
             return result;
         }
 
