@@ -1,0 +1,6 @@
+.vs/
+.vscode/
+.idea/
+[Oo]bj
+[bB]in
+*.userspace
