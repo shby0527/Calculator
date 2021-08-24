@@ -342,7 +342,7 @@ namespace Calc
                         }
                         findFlag = true;
                         opt.Pop();
-                        if (opt.Count == 0)
+                        if (opt.Count == 0 || opt.Peek() == "(")
                         {
                             break;
                         }
