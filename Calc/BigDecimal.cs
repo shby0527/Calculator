@@ -25,7 +25,7 @@ namespace Calc
         /// Sets the maximum precision of division operations.
         /// If AlwaysTruncate is set to true all operations are affected.
         /// </summary>
-        public static readonly int Precision = 50;
+        public static readonly int Precision = 100;
 
         public BigInteger Mantissa { get; init; }
         public int Exponent { get; init; }

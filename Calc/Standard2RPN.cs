@@ -162,6 +162,7 @@ namespace Calc
                 { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Log((double)param[0]))},
                 { "log",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Log((double)param[1],(double)param[0]))},
                 { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Sqrt((double)param[0]))},
+                { "sqrtn",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Pow((double)param[0], 1/(double)param[1]))},
                 { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Sin((double)param[0]))},
                 { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Cos((double)param[0]))},
                 { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Tan((double)param[0]))},
@@ -170,7 +171,7 @@ namespace Calc
                 { "A",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => MyMath.Arrangement(param[0],param[1]))},
                 { "PI",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.Pi) },
                 { "e",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.E) },
-                { "G",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.67E-11M) },
+                { "G",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.67259E-11M) },
                 { "Na",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.02214076E23M) }
             };
             _origin = input;
