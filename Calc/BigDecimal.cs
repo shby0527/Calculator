@@ -17,7 +17,7 @@ namespace Calc
     /// Author: Jan Christoph Bernack (contact: jc.bernack at gmail.com)
     /// License: public domain
     /// </summary>
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("\\{{ToString(),nq}\\}")]
     public readonly struct BigDecimal
         : IComparable
         , IComparable<BigDecimal>

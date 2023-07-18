@@ -122,7 +122,9 @@ namespace Calc
         public static BigDecimal Sin(BigDecimal v)
         {
             BigDecimal s = 0;
-            for (BigInteger i = 0; i < TAYLOR_SERIES_F; i++)
+            BigDecimal bf = 0;
+            BigInteger i = 0;
+            while (true)
             {
                 BigInteger mx = 2 * i + 1;
                 BigDecimal vf = Factorial(mx);
@@ -135,6 +137,15 @@ namespace Calc
                 {
                     s -= (vt / vf);
                 }
+                if (s.Truncate() == bf.Truncate())
+                {
+                    break;
+                }
+                else
+                {
+                    bf = s;
+                }
+                i++;
             }
             return s.Truncate();
         }
@@ -143,7 +154,9 @@ namespace Calc
         public static BigDecimal Cos(BigDecimal v)
         {
             BigDecimal s = 0;
-            for (BigInteger i = 0; i < TAYLOR_SERIES_F; i++)
+            BigDecimal bf = 0;
+            BigInteger i = 0;
+            while (true)
             {
                 BigInteger mx = 2 * i;
                 BigDecimal vf = Factorial(mx);
@@ -156,6 +169,15 @@ namespace Calc
                 {
                     s -= (vt / vf);
                 }
+                if (s.Truncate() == bf.Truncate())
+                {
+                    break;
+                }
+                else
+                {
+                    bf = s;
+                }
+                i++;
             }
             return s.Truncate();
         }
@@ -170,10 +192,21 @@ namespace Calc
         {
             BigDecimal s = 0;
             BigDecimal sv = (v - 1) / (v + 1);
-            for (BigDecimal i = 0; i <= TAYLOR_SERIES_F * 2; i++)
+            BigDecimal bf = 0;
+            BigInteger i = 0;
+            while (true)
             {
                 BigDecimal vt = Pow(sv, 2 * i);
                 s += vt / (2 * i + 1);
+                if (s.Truncate() == bf.Truncate())
+                {
+                    break;
+                }
+                else
+                {
+                    bf = s;
+                }
+                i++;
             }
             return (2 * sv * s).Truncate();
         }
