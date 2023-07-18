@@ -132,18 +132,18 @@ namespace Calc
                 if (i % 2 == 0)
                 {
                     s += (vt / vf);
+                    if (s.Truncate() == bf.Truncate())
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        bf = s;
+                    }
                 }
                 else
                 {
                     s -= (vt / vf);
-                }
-                if (s.Truncate() == bf.Truncate())
-                {
-                    break;
-                }
-                else
-                {
-                    bf = s;
                 }
                 i++;
             }
@@ -164,19 +164,20 @@ namespace Calc
                 if (i % 2 == 0)
                 {
                     s += (vt / vf);
+                    if (s.Truncate() == bf.Truncate())
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        bf = s;
+                    }
                 }
                 else
                 {
                     s -= (vt / vf);
                 }
-                if (s.Truncate() == bf.Truncate())
-                {
-                    break;
-                }
-                else
-                {
-                    bf = s;
-                }
+
                 i++;
             }
             return s.Truncate();
