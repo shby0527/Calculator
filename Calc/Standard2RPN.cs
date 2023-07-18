@@ -169,20 +169,13 @@ namespace Calc
         public static BigDecimal Ln(BigDecimal v)
         {
             BigDecimal s = 0;
-            BigDecimal sv = v - 1;
-            for (BigDecimal i = 1; i <= TAYLOR_SERIES_F; i++)
+            BigDecimal sv = (v - 1) / (v + 1);
+            for (BigDecimal i = 0; i <= TAYLOR_SERIES_F * 2; i++)
             {
-                BigDecimal vt = Pow(sv, i) / i;
-                if (i % 2 == 0)
-                {
-                    s += vt;
-                }
-                else
-                {
-                    s -= vt;
-                }
+                BigDecimal vt = Pow(sv, 2 * i);
+                s += vt / (2 * i + 1);
             }
-            return s.Truncate();
+            return (2 * sv * s).Truncate();
         }
 
         public static readonly BigDecimal Pi;
