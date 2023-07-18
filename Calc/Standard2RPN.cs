@@ -196,8 +196,10 @@ namespace Calc
             BigInteger i = 0;
             while (true)
             {
-                BigDecimal vt = Pow(sv, 2 * i);
-                s += vt / (2 * i + 1);
+                BigDecimal vm = 2 * i + 1;
+                BigDecimal vt = Pow(sv, vm);
+                BigDecimal vf = vm;
+                s += (vt / vf);
                 if (s.Truncate() == bf.Truncate())
                 {
                     break;
@@ -208,7 +210,7 @@ namespace Calc
                 }
                 i++;
             }
-            return (2 * sv * s).Truncate();
+            return (2 * s).Truncate();
         }
 
         public static readonly BigDecimal Pi;
