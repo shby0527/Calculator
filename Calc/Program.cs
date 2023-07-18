@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Calc
 {
@@ -24,7 +25,11 @@ namespace Calc
                     Standard2RPN rpn = line;
                     //Console.WriteLine(rpn.GetOrigin());
                     //Console.WriteLine($"后缀表达式:{rpn}");
-                    Console.WriteLine($"{rpn.GetFormattedOrigin()}= {rpn.Calc()}");
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+                    Console.WriteLine($"{rpn.GetFormattedOrigin()} = {rpn.Calc()}");
+                    sw.Stop();
+                    Console.WriteLine($"计算总耗时：{sw.Elapsed}");
                 }
                 catch (Exception e)
                 {
