@@ -66,6 +66,8 @@ namespace Calc
     public static class MyMath
     {
 
+        private static readonly BigInteger TAYLOR_SERIES_F = 100;
+
         public static BigDecimal Factorial(BigDecimal value)
         {
             BigDecimal result = 1;
@@ -117,6 +119,72 @@ namespace Calc
             return a <= b ? a : b;
         }
 
+        public static BigDecimal Sin(BigDecimal v)
+        {
+            BigDecimal s = 0;
+            for (BigInteger i = 0; i < TAYLOR_SERIES_F; i++)
+            {
+                BigInteger mx = 2 * i + 1;
+                BigDecimal vf = Factorial(mx);
+                BigDecimal vt = Pow(v, mx);
+                if (i % 2 == 0)
+                {
+                    s += (vt / vf);
+                }
+                else
+                {
+                    s -= (vt / vf);
+                }
+            }
+            return s.Truncate();
+        }
+
+
+        public static BigDecimal Cos(BigDecimal v)
+        {
+            BigDecimal s = 0;
+            for (BigInteger i = 0; i < TAYLOR_SERIES_F; i++)
+            {
+                BigInteger mx = 2 * i;
+                BigDecimal vf = Factorial(mx);
+                BigDecimal vt = Pow(v, mx);
+                if (i % 2 == 0)
+                {
+                    s += (vt / vf);
+                }
+                else
+                {
+                    s -= (vt / vf);
+                }
+            }
+            return s.Truncate();
+        }
+
+        public static BigDecimal Tan(BigDecimal v)
+        {
+            return Sin(v) / Cos(v);
+        }
+
+
+        public static BigDecimal Ln(BigDecimal v)
+        {
+            BigDecimal s = 0;
+            BigDecimal sv = v - 1;
+            for (BigDecimal i = 1; i <= TAYLOR_SERIES_F; i++)
+            {
+                BigDecimal vt = Pow(sv, i) / i;
+                if (i % 2 == 0)
+                {
+                    s += vt;
+                }
+                else
+                {
+                    s -= vt;
+                }
+            }
+            return s.Truncate();
+        }
+
         public static readonly BigDecimal Pi;
         public static readonly BigDecimal E;
 
@@ -159,20 +227,21 @@ namespace Calc
                 { "max",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2,param => MyMath.Max(param[0], param[1])) },
                 { "min",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2, param => MyMath.Min(param[0], param[1])) },
                 { "lg",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Log10((double)param[0]))},
-                { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Log((double)param[0]))},
+                { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Ln(param[0]))},
                 { "log",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Log((double)param[1],(double)param[0]))},
                 { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Sqrt((double)param[0]))},
                 { "sqrtn",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Pow((double)param[0], 1/(double)param[1]))},
-                { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Sin((double)param[0]))},
-                { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Cos((double)param[0]))},
-                { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Tan((double)param[0]))},
+                { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Sin(param[0]))},
+                { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Cos(param[0]))},
+                { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Tan(param[0]))},
                 { "abs",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Abs(param[0]))},
                 { "C",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => MyMath.Combination(param[0],param[1]))},
                 { "A",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => MyMath.Arrangement(param[0],param[1]))},
                 { "PI",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.Pi) },
                 { "e",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.E) },
                 { "G",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.67259E-11M) },
-                { "Na",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.02214076E23M) }
+                { "Na",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.02214076E23M) },
+                { "c",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 299_792_458M) }
             };
             _origin = input;
             Analyzer();

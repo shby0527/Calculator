@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -16,6 +17,7 @@ namespace Calc
     /// Author: Jan Christoph Bernack (contact: jc.bernack at gmail.com)
     /// License: public domain
     /// </summary>
+    [DebuggerDisplay("{ToString()}")]
     public readonly struct BigDecimal
         : IComparable
         , IComparable<BigDecimal>
