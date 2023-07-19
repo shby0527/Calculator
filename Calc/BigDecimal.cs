@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -16,6 +17,7 @@ namespace Calc
     /// Author: Jan Christoph Bernack (contact: jc.bernack at gmail.com)
     /// License: public domain
     /// </summary>
+    [DebuggerDisplay("\\{{ToString(),nq}\\}")]
     public readonly struct BigDecimal
         : IComparable
         , IComparable<BigDecimal>
@@ -63,10 +65,20 @@ namespace Calc
         {
             BigInteger mantissa = Mantissa;
             int exponent = Exponent;
-            while (NumberOfDigits(mantissa) > precision)
+            if (exponent >= 0) return new BigDecimal(mantissa, exponent);
+            int d = NumberOfDigits(mantissa);
+            while (d > precision)
             {
                 mantissa /= 10;
                 exponent++;
+                d--;
+            }
+            int td = NumberOfDigits(mantissa);
+            int k = td + exponent;
+            if (k < -precision)
+            {
+                // 小数位太多太多了,直接返回0
+                return new BigDecimal(BigInteger.Zero, 0);
             }
             return new BigDecimal(mantissa, exponent);
         }

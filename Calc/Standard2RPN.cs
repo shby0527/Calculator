@@ -66,6 +66,8 @@ namespace Calc
     public static class MyMath
     {
 
+        private static readonly BigInteger TAYLOR_SERIES_F = 100;
+
         public static BigDecimal Factorial(BigDecimal value)
         {
             BigDecimal result = 1;
@@ -117,13 +119,108 @@ namespace Calc
             return a <= b ? a : b;
         }
 
+        public static BigDecimal Sin(BigDecimal v)
+        {
+            BigDecimal s = 0;
+            BigDecimal bf = 0;
+            BigInteger i = 0;
+            while (true)
+            {
+                BigInteger mx = 2 * i + 1;
+                BigDecimal vf = Factorial(mx);
+                BigDecimal vt = Pow(v, mx);
+                if (i % 2 == 0)
+                {
+                    s += (vt / vf);
+                    if (s.Truncate() == bf.Truncate())
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        bf = s;
+                    }
+                }
+                else
+                {
+                    s -= (vt / vf);
+                }
+                i++;
+            }
+            return s.Truncate();
+        }
+
+
+        public static BigDecimal Cos(BigDecimal v)
+        {
+            BigDecimal s = 0;
+            BigDecimal bf = 0;
+            BigInteger i = 0;
+            while (true)
+            {
+                BigInteger mx = 2 * i;
+                BigDecimal vf = Factorial(mx);
+                BigDecimal vt = Pow(v, mx);
+                if (i % 2 == 0)
+                {
+                    s += (vt / vf);
+                    if (s.Truncate() == bf.Truncate())
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        bf = s;
+                    }
+                }
+                else
+                {
+                    s -= (vt / vf);
+                }
+
+                i++;
+            }
+            return s.Truncate();
+        }
+
+        public static BigDecimal Tan(BigDecimal v)
+        {
+            return Sin(v) / Cos(v);
+        }
+
+
+        public static BigDecimal Ln(BigDecimal v)
+        {
+            BigDecimal s = 0;
+            BigDecimal sv = (v - 1) / (v + 1);
+            BigDecimal bf = 0;
+            BigInteger i = 0;
+            while (true)
+            {
+                BigDecimal vm = 2 * i + 1;
+                BigDecimal vt = Pow(sv, vm);
+                BigDecimal vf = vm;
+                s += (vt / vf);
+                if (s.Truncate() == bf.Truncate())
+                {
+                    break;
+                }
+                else
+                {
+                    bf = s;
+                }
+                i++;
+            }
+            return (2 * s).Truncate();
+        }
+
         public static readonly BigDecimal Pi;
         public static readonly BigDecimal E;
 
         static MyMath()
         {
-            Pi = BigDecimal.Parse("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679");
-            E = BigDecimal.Parse("2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274");
+            Pi = BigDecimal.Parse("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132000568127145263560827785771342757789609173637178721468440901224953430146549585371050792279689258923542019956112129021960864034418159813629774771309960518707211349999998372978049951059731732816096318595024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303598253490428755468731159562");
+            E = BigDecimal.Parse("2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383418793070215408914993488416750924476146066808226480016847741185374234544243710753907774499206955170276183860626133138458300075204493382656029760673711320070932870912744374704723069697720931014169283681902551510865746377211125238978442505695369677078544996996794686445490598793163688923009879312773617821542499922957635148220826989519366803318252886939849646510582093923982948879332036250944311730123819706841614039701983767932068328237646480429531180232878250981945581530175671736133206981125099618188159304169035159888851934580727386673858942287922849989208680582574927961048419844436346324496848756023362482704197862320900216099023530436994184914631409343173814364054625315209618369088870701676839642437814059271456354");
         }
     }
 
@@ -159,20 +256,21 @@ namespace Calc
                 { "max",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2,param => MyMath.Max(param[0], param[1])) },
                 { "min",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2, param => MyMath.Min(param[0], param[1])) },
                 { "lg",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Log10((double)param[0]))},
-                { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Log((double)param[0]))},
+                { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Ln(param[0]))},
                 { "log",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Log((double)param[1],(double)param[0]))},
                 { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Sqrt((double)param[0]))},
                 { "sqrtn",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Pow((double)param[0], 1/(double)param[1]))},
-                { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Sin((double)param[0]))},
-                { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Cos((double)param[0]))},
-                { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Tan((double)param[0]))},
+                { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Sin(param[0]))},
+                { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Cos(param[0]))},
+                { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Tan(param[0]))},
                 { "abs",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Abs(param[0]))},
                 { "C",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => MyMath.Combination(param[0],param[1]))},
                 { "A",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => MyMath.Arrangement(param[0],param[1]))},
                 { "PI",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.Pi) },
                 { "e",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.E) },
                 { "G",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.67259E-11M) },
-                { "Na",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.02214076E23M) }
+                { "Na",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.02214076E23M) },
+                { "c",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 299_792_458M) }
             };
             _origin = input;
             Analyzer();
