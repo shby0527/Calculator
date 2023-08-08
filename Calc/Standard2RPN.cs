@@ -121,6 +121,18 @@ namespace Calc
 
         public static BigDecimal Sin(BigDecimal v)
         {
+            int sign = 1;
+            BigDecimal arg = v;
+            if (arg < 0)
+            {
+                arg = -arg;
+                sign = -sign;
+            }
+            while (arg >= 2 * Pi)
+            {
+                // 规约
+                arg -= 2 * Pi;
+            }
             BigDecimal s = 0;
             BigDecimal bf = 0;
             BigInteger i = 0;
@@ -128,7 +140,7 @@ namespace Calc
             {
                 BigInteger mx = 2 * i + 1;
                 BigDecimal vf = Factorial(mx);
-                BigDecimal vt = Pow(v, mx);
+                BigDecimal vt = Pow(arg, mx);
                 if (i % 2 == 0)
                 {
                     s += (vt / vf);
@@ -147,12 +159,24 @@ namespace Calc
                 }
                 i++;
             }
-            return s.Truncate();
+            return s.Truncate() * sign;
         }
 
 
         public static BigDecimal Cos(BigDecimal v)
         {
+            int sign = 1;
+            BigDecimal arg = v;
+            if (arg < 0)
+            {
+                arg = -arg;
+                sign = -sign;
+            }
+            while (arg >= 2 * Pi)
+            {
+                // 规约
+                arg -= 2 * Pi;
+            }
             BigDecimal s = 0;
             BigDecimal bf = 0;
             BigInteger i = 0;
@@ -160,7 +184,7 @@ namespace Calc
             {
                 BigInteger mx = 2 * i;
                 BigDecimal vf = Factorial(mx);
-                BigDecimal vt = Pow(v, mx);
+                BigDecimal vt = Pow(arg, mx);
                 if (i % 2 == 0)
                 {
                     s += (vt / vf);
@@ -180,7 +204,7 @@ namespace Calc
 
                 i++;
             }
-            return s.Truncate();
+            return s.Truncate() * sign;
         }
 
         public static BigDecimal Tan(BigDecimal v)
