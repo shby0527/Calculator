@@ -41,6 +41,7 @@ namespace Calc
                         Console.WriteLine($"{rpn.GetFormattedOrigin()} = {rpn.Calc()}");
                         sw.Stop();
                         Console.WriteLine($"计算总耗时：{sw.Elapsed}");
+                        Canceling = true;
                     }
 
                 }
