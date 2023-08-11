@@ -41,7 +41,7 @@ namespace Calc
                     }
 
                 }
-                catch (TaskCanceledException) { }
+                catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
                     Console.WriteLine($"您的输入有语法错误, {e.Message}");
