@@ -8,7 +8,7 @@ namespace Calc
     public class Program
     {
         static CancellationTokenSource source;
-        static bool Canceling = false;
+        static bool Canceling = true;
 
         public static void Main(string[] args)
         {
