@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 
 namespace Calc
 {
@@ -66,7 +67,11 @@ namespace Calc
     public static class MyMath
     {
 
-        private static readonly BigInteger TAYLOR_SERIES_F = 100;
+        public static CancellationToken CancellationToken
+        {
+            private get;
+            set;
+        }
 
         public static BigDecimal Factorial(BigDecimal value)
         {
@@ -75,6 +80,7 @@ namespace Calc
             for (BigDecimal i = 1; i <= value; i++)
             {
                 result *= i;
+                CancellationToken.ThrowIfCancellationRequested();
             }
             return result;
         }
@@ -99,6 +105,7 @@ namespace Calc
             for (BigDecimal i = 1; i <= exp; i++)
             {
                 result *= a;
+                CancellationToken.ThrowIfCancellationRequested();
             }
             if (b < 0) return 1 / result;
             return result;
@@ -132,12 +139,14 @@ namespace Calc
             {
                 // 规约
                 arg -= 2 * Pi;
+                CancellationToken.ThrowIfCancellationRequested();
             }
             BigDecimal s = 0;
             BigDecimal bf = 0;
             BigInteger i = 0;
             while (true)
             {
+                CancellationToken.ThrowIfCancellationRequested();
                 BigInteger mx = 2 * i + 1;
                 BigDecimal vf = Factorial(mx);
                 BigDecimal vt = Pow(arg, mx);
@@ -176,12 +185,14 @@ namespace Calc
             {
                 // 规约
                 arg -= 2 * Pi;
+                CancellationToken.ThrowIfCancellationRequested();
             }
             BigDecimal s = 0;
             BigDecimal bf = 0;
             BigInteger i = 0;
             while (true)
             {
+                CancellationToken.ThrowIfCancellationRequested();
                 BigInteger mx = 2 * i;
                 BigDecimal vf = Factorial(mx);
                 BigDecimal vt = Pow(arg, mx);
@@ -221,6 +232,7 @@ namespace Calc
             BigInteger i = 0;
             while (true)
             {
+                CancellationToken.ThrowIfCancellationRequested();
                 BigDecimal vm = 2 * i + 1;
                 BigDecimal vt = Pow(sv, vm);
                 BigDecimal vf = vm;
@@ -261,6 +273,14 @@ namespace Calc
         private readonly string _origin;
 
         private readonly IDictionary<string, OperatorInfo> _operator;
+
+        public CancellationToken CancellationToken
+        {
+            set
+            {
+                MyMath.CancellationToken = value;
+            }
+        }
 
         public Standard2RPN(string input)
         {
