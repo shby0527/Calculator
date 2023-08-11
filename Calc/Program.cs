@@ -8,6 +8,8 @@ namespace Calc
     public class Program
     {
         static CancellationTokenSource source;
+        static bool Canceling = false;
+
         public static void Main(string[] args)
         {
             Console.CancelKeyPress += OnKeyCancelPress;
@@ -29,6 +31,7 @@ namespace Calc
                     }
                     using (source = new())
                     {
+                        Canceling = false;
                         Standard2RPN rpn = line;
                         rpn.CancellationToken = source.Token;
                         //Console.WriteLine(rpn.GetOrigin());
@@ -51,7 +54,12 @@ namespace Calc
 
         public static void OnKeyCancelPress(object sender, ConsoleCancelEventArgs e)
         {
-            source.Cancel(true);
+            if (!Canceling)
+            {
+                Canceling = true;
+                source.Cancel(true);
+                Console.WriteLine("正在取消任务");
+            }
             e.Cancel = true;
         }
     }
