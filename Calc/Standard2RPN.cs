@@ -153,7 +153,7 @@ namespace Calc
                 if (i % 2 == 0)
                 {
                     s += (vt / vf);
-                    if (s.Truncate() == bf.Truncate())
+                    if (s.Truncate(100) == bf.Truncate(100))
                     {
                         break;
                     }
@@ -168,7 +168,7 @@ namespace Calc
                 }
                 i++;
             }
-            return s.Truncate() * sign;
+            return s.Truncate(100) * sign;
         }
 
 
@@ -199,7 +199,7 @@ namespace Calc
                 if (i % 2 == 0)
                 {
                     s += (vt / vf);
-                    if (s.Truncate() == bf.Truncate())
+                    if (s.Truncate(100) == bf.Truncate(100))
                     {
                         break;
                     }
@@ -215,7 +215,7 @@ namespace Calc
 
                 i++;
             }
-            return s.Truncate() * sign;
+            return s.Truncate(100) * sign;
         }
 
         public static BigDecimal Tan(BigDecimal v)
@@ -237,7 +237,7 @@ namespace Calc
                 BigDecimal vt = Pow(sv, vm);
                 BigDecimal vf = vm;
                 s += (vt / vf);
-                if (s.Truncate() == bf.Truncate())
+                if (s.Truncate(100) == bf.Truncate(100))
                 {
                     break;
                 }
@@ -247,7 +247,7 @@ namespace Calc
                 }
                 i++;
             }
-            return (2 * s).Truncate();
+            return (2 * s).Truncate(100);
         }
 
         public static readonly BigDecimal Pi;
