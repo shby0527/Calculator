@@ -166,7 +166,7 @@ namespace Calc
         {
             if (!a.IsComplex) return Sqrt(a.Real);
 
-            return a.Modulus * new BigComplex(Cos(a.Argument / 2).Truncate(15), Sin(a.Argument / 2).Truncate(15));
+            return Sqrt(a.Modulus) * new BigComplex(Cos(a.Argument / 2).Truncate(15), Sin(a.Argument / 2).Truncate(15));
         }
 
         public static BigDecimal Sin(BigDecimal v)
