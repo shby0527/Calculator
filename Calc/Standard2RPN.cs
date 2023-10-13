@@ -149,18 +149,24 @@ namespace Calc
             return a <= b ? a : b;
         }
 
-        public static BigComplex Sqrt(BigDecimal a)
+        public static BigDecimal Sqrt(BigDecimal a)
         {
-            BigDecimal origin = Abs(a);
             BigDecimal err = new(1, -101);
             BigDecimal pre = Abs(a);
-            while (Abs(origin - pre * pre) > err)
+            while (Abs(a - pre * pre) > err)
             {
-                pre = (origin / pre + pre) / 2;
+                pre = (a / pre + pre) / 2;
                 CancellationToken.ThrowIfCancellationRequested();
             }
-            if (a < 0) return new(0, pre.Truncate(100));
             return pre.Truncate(100);
+        }
+
+
+        public static BigComplex Sqrt(BigComplex a)
+        {
+            if (!a.IsComplex) return Sqrt(a.Real);
+
+            return a.Modulus * new BigComplex(Cos(a.Argument / 2).Truncate(15), Sin(a.Argument / 2).Truncate(15));
         }
 
         public static BigDecimal Sin(BigDecimal v)
@@ -379,8 +385,7 @@ namespace Calc
                     return Math.Log((double)param[1].Real,(double)param[0].Real);
                 })},
                 { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
-                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
-                    return MyMath.Sqrt(param[0].Real);
+                    return MyMath.Sqrt(param[0]);
                 })},
                 { "sqrtn",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{
                     if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");

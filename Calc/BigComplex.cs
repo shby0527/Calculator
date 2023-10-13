@@ -24,7 +24,7 @@ public readonly struct BigComplex
 
         get
         {
-            return MyMath.Sqrt(MyMath.Pow(this.Real, 2) + MyMath.Pow(this.Imaginary, 2)).Real;
+            return MyMath.Sqrt(MyMath.Pow(this.Real, 2) + MyMath.Pow(this.Imaginary, 2));
         }
     }
 
