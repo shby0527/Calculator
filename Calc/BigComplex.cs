@@ -164,10 +164,8 @@ public readonly struct BigComplex
                 {
                     sb.Append('+');
                 }
-                else
-                {
-                    if (this.Imaginary != 1) sb.Append(this.Imaginary);
-                }
+                if (this.Imaginary != 1) sb.Append(this.Imaginary);
+
             }
             sb.Append('i');
         }
