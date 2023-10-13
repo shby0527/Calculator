@@ -126,8 +126,22 @@ namespace Calc
             return a <= b ? a : b;
         }
 
+        public static BigDecimal Sqrt(BigDecimal a)
+        {
+            if (a < 0) throw new InvalidOperationException("n smailler then 0");
+            BigDecimal err = new(1, -101);
+            BigDecimal pre = a;
+            while (Abs(a - pre * pre) > err)
+            {
+                pre = (a / pre + pre) / 2;
+                CancellationToken.ThrowIfCancellationRequested();
+            }
+            return pre.Truncate(100);
+        }
+
         public static BigDecimal Sin(BigDecimal v)
         {
+            BigDecimal err = new(1, -101);
             int sign = 1;
             BigDecimal arg = v;
             if (arg < 0)
@@ -152,8 +166,8 @@ namespace Calc
                 BigDecimal vt = Pow(arg, mx);
                 if (i % 2 == 0)
                 {
-                    s += (vt / vf);
-                    if (s.Truncate(100) == bf.Truncate(100))
+                    s += vt / vf;
+                    if (Abs(s - bf) < err)
                     {
                         break;
                     }
@@ -164,7 +178,7 @@ namespace Calc
                 }
                 else
                 {
-                    s -= (vt / vf);
+                    s -= vt / vf;
                 }
                 i++;
             }
@@ -174,6 +188,7 @@ namespace Calc
 
         public static BigDecimal Cos(BigDecimal v)
         {
+            BigDecimal err = new(1, -101);
             int sign = 1;
             BigDecimal arg = v;
             if (arg < 0)
@@ -198,8 +213,8 @@ namespace Calc
                 BigDecimal vt = Pow(arg, mx);
                 if (i % 2 == 0)
                 {
-                    s += (vt / vf);
-                    if (s.Truncate(100) == bf.Truncate(100))
+                    s += vt / vf;
+                    if (Abs(s - bf) < err)
                     {
                         break;
                     }
@@ -210,7 +225,7 @@ namespace Calc
                 }
                 else
                 {
-                    s -= (vt / vf);
+                    s -= vt / vf;
                 }
 
                 i++;
@@ -226,6 +241,7 @@ namespace Calc
 
         public static BigDecimal Ln(BigDecimal v)
         {
+            BigDecimal err = new(1, -101);
             BigDecimal s = 0;
             BigDecimal sv = (v - 1) / (v + 1);
             BigDecimal bf = 0;
@@ -236,8 +252,8 @@ namespace Calc
                 BigDecimal vm = 2 * i + 1;
                 BigDecimal vt = Pow(sv, vm);
                 BigDecimal vf = vm;
-                s += (vt / vf);
-                if (s.Truncate(100) == bf.Truncate(100))
+                s += vt / vf;
+                if (Abs(s - bf) < err)
                 {
                     break;
                 }
@@ -302,7 +318,7 @@ namespace Calc
                 { "lg",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Log10((double)param[0]))},
                 { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Ln(param[0]))},
                 { "log",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Log((double)param[1],(double)param[0]))},
-                { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Sqrt((double)param[0]))},
+                { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Sqrt(param[0]))},
                 { "sqrtn",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Pow((double)param[0], 1/(double)param[1]))},
                 { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Sin(param[0]))},
                 { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Cos(param[0]))},
