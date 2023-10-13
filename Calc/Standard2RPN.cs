@@ -47,6 +47,15 @@ namespace Calc
             }
             throw new InvalidCastException("This item not a number");
         }
+
+        public static implicit operator BigComplex(RPNItem item)
+        {
+            if (item.IsNumber)
+            {
+                return BigDecimal.Parse(item.Item);
+            }
+            throw new InvalidCastException("This item not a number");
+        }
     }
 
     public enum OrderType
@@ -62,7 +71,7 @@ namespace Calc
         CONST
     }
 
-    public record OperatorInfo(int Priority, OrderType Order, OpType Type, int CountOfOp, Func<BigDecimal[], BigDecimal> Func);
+    public record OperatorInfo(int Priority, OrderType Order, OpType Type, int CountOfOp, Func<BigComplex[], BigComplex> Func);
 
     public static class MyMath
     {
@@ -302,35 +311,93 @@ namespace Calc
         {
             _operator = new Dictionary<string, OperatorInfo>()
             {
-                { "and", new OperatorInfo(0,OrderType.Left, OpType.Op,2, param => ((BigInteger)param[0]) & ((BigInteger)param[1])) },
-                { "or", new OperatorInfo(0,OrderType.Left, OpType.Op,2, param => ((BigInteger)param[0]) | ((BigInteger)param[1])) },
-                { "xor", new OperatorInfo(0,OrderType.Left, OpType.Op,2, param => ((BigInteger)param[0]) ^ ((BigInteger)param[1])) },
-                { "not", new OperatorInfo(0,OrderType.Left, OpType.Op,1, param => ~(BigInteger)param[0]) },
+                { "and", new OperatorInfo(0,OrderType.Left, OpType.Op,2, param => {
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return ((BigInteger)param[0].Real) & ((BigInteger)param[1].Real);
+                }) },
+                { "or", new OperatorInfo(0,OrderType.Left, OpType.Op,2, param => {
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return ((BigInteger)param[0].Real) | ((BigInteger)param[1].Real);
+                }) },
+                { "xor", new OperatorInfo(0,OrderType.Left, OpType.Op,2, param => {
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return ((BigInteger)param[0].Real) ^ ((BigInteger)param[1].Real);
+                }) },
+                { "not", new OperatorInfo(0,OrderType.Left, OpType.Op,1, param => {
+                    if(param[0].IsComplex ) throw new InvalidOperationException("Complex Can Not do this");
+                    return ~(BigInteger)param[0].Real;
+                }) },
                 { "+", new OperatorInfo(1,OrderType.Left, OpType.Op,2, param => param[0] + param[1]) },
                 { "-", new OperatorInfo(1,OrderType.Left,OpType.Op,2,param => param[0] - param[1] ) },
                 { "*", new OperatorInfo(2,OrderType.Left,OpType.Op,2,param => param[0] * param[1] ) },
                 { "/", new OperatorInfo(2,OrderType.Left,OpType.Op,2,param => param[0] / param[1] ) },
-                { "%", new OperatorInfo(2,OrderType.Left, OpType.Op,2,param => param[0] % param[1]) },
-                { "^", new OperatorInfo(3,OrderType.Right, OpType.Op,2,param => MyMath.Pow(param[0], param[1])) },
-                { "!", new OperatorInfo(4,OrderType.Left, OpType.Op,1,param => MyMath.Factorial(param[0])) },
-                { "max",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2,param => MyMath.Max(param[0], param[1])) },
-                { "min",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2, param => MyMath.Min(param[0], param[1])) },
-                { "lg",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => Math.Log10((double)param[0]))},
-                { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Ln(param[0]))},
-                { "log",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Log((double)param[1],(double)param[0]))},
-                { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Sqrt(param[0]))},
-                { "sqrtn",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => Math.Pow((double)param[0], 1/(double)param[1]))},
-                { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Sin(param[0]))},
-                { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Cos(param[0]))},
-                { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Tan(param[0]))},
-                { "abs",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => MyMath.Abs(param[0]))},
-                { "C",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => MyMath.Combination(param[0],param[1]))},
-                { "A",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param => MyMath.Arrangement(param[0],param[1]))},
+                { "%", new OperatorInfo(2,OrderType.Left, OpType.Op,2,param => {
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return param[0].Real % param[1].Real;
+                }) },
+                { "^", new OperatorInfo(3,OrderType.Right, OpType.Op,2,param => {
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return MyMath.Pow(param[0].Real, param[1].Real);
+                }) },
+                { "!", new OperatorInfo(4,OrderType.Left, OpType.Op,1,param => {
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return MyMath.Factorial(param[0].Real);
+                }) },
+                { "max",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2,param => {
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return MyMath.Max(param[0].Real, param[1].Real);
+                }) },
+                { "min",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func,2, param =>{
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return  MyMath.Min(param[0].Real, param[1].Real);
+                }) },
+                { "lg",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return Math.Log10((double)param[0].Real);
+                })},
+                { "ln",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return MyMath.Ln(param[0].Real);
+                })},
+                { "log",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return Math.Log((double)param[1].Real,(double)param[0].Real);
+                })},
+                { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return MyMath.Sqrt(param[0].Real);
+                })},
+                { "sqrtn",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return Math.Pow((double)param[0].Real, 1/(double)param[1].Real);
+                })},
+                { "sin",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return  MyMath.Sin(param[0].Real);
+                })},
+                { "cos",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return  MyMath.Cos(param[0].Real);
+                })},
+                { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return   MyMath.Tan(param[0].Real);
+                })},
+                { "abs",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => BigComplex.Abs(param[0]))},
+                { "C",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return MyMath.Combination(param[0].Real,param[1].Real);
+                })},
+                { "A",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{
+                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return  MyMath.Arrangement(param[0].Real,param[1].Real);
+                })},
                 { "PI",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.Pi) },
                 { "e",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => MyMath.E) },
                 { "G",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.67259E-11M) },
                 { "Na",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 6.02214076E23M) },
-                { "c",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 299_792_458M) }
+                { "c",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => 299_792_458M) },
+                { "i",new OperatorInfo(int.MaxValue,OrderType.Left,OpType.CONST,0, param => new(0,1)) },
             };
             _origin = input;
             Analyzer();
@@ -531,9 +598,9 @@ namespace Calc
             }
         }
 
-        public BigDecimal Calc()
+        public BigComplex Calc()
         {
-            Stack<BigDecimal> dc = new();
+            Stack<BigComplex> dc = new();
             foreach (var item in _rpn)
             {
                 if (item.IsNumber)
@@ -544,14 +611,14 @@ namespace Calc
                 string op = item;
                 OperatorInfo opInfo = _operator[op];
                 int c = opInfo.CountOfOp;
-                BigDecimal[] opNum = new BigDecimal[c];
+                BigComplex[] opNum = new BigComplex[c];
                 for (int i = opNum.Length - 1; i >= 0; i--)
                 {
                     opNum[i] = dc.Pop();
                 }
                 dc.Push(opInfo.Func(opNum));
             }
-            BigDecimal result = dc.Pop();
+            BigComplex result = dc.Pop();
             if (dc.Count != 0)
             {
                 throw new InvalidOperationException("输入有误，结果不可靠");

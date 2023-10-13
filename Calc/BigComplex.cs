@@ -150,10 +150,28 @@ public readonly struct BigComplex
     public override string ToString()
     {
         StringBuilder sb = new();
-        sb.Append(this.Real);
-        if (this.Imaginary < 0) sb.Append(this.Imaginary);
-        else sb.Append('+').Append(this.Imaginary);
-        sb.Append('i');
+        if (this.Real != 0) sb.Append(this.Real);
+        if (this.Imaginary != 0)
+        {
+            if (this.Imaginary < 0)
+            {
+                if (this.Imaginary == -1) sb.Append('-');
+                else sb.Append(this.Imaginary);
+            }
+            else
+            {
+                if (this.Real != 0)
+                {
+                    sb.Append('+');
+                }
+                else
+                {
+                    if (this.Imaginary != 1) sb.Append(this.Imaginary);
+                }
+            }
+            sb.Append('i');
+        }
+        if (this.Real == 0 && this.Imaginary == 0) sb.Append('0');
         return sb.ToString();
     }
 
