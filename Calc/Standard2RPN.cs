@@ -145,8 +145,8 @@ namespace Calc
                 pre = (origin / pre + pre) / 2;
                 CancellationToken.ThrowIfCancellationRequested();
             }
-            if (a < 0) return new(0, pre);
-            return pre;
+            if (a < 0) return new(0, pre.Truncate(100));
+            return pre.Truncate(100);
         }
 
         public static BigDecimal Sin(BigDecimal v)
