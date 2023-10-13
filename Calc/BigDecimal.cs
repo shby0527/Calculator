@@ -105,6 +105,11 @@ namespace Calc
             return new BigDecimal(value, 0);
         }
 
+        public static implicit operator BigDecimal(long v)
+        {
+            return new BigDecimal(v, 0);
+        }
+
         public static implicit operator BigDecimal(double value)
         {
             var mantissa = (BigInteger)value;
