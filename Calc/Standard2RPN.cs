@@ -135,17 +135,17 @@ namespace Calc
             return a <= b ? a : b;
         }
 
-        public static BigDecimal Sqrt(BigDecimal a)
+        public static BigComplex Sqrt(BigDecimal a)
         {
-            if (a < 0) throw new InvalidOperationException("n smailler then 0");
             BigDecimal err = new(1, -101);
-            BigDecimal pre = a;
+            BigDecimal pre = Abs(a);
             while (Abs(a - pre * pre) > err)
             {
                 pre = (a / pre + pre) / 2;
                 CancellationToken.ThrowIfCancellationRequested();
             }
-            return pre.Truncate(100);
+            if (a < 0) return new(0, pre);
+            return pre;
         }
 
         public static BigDecimal Sin(BigDecimal v)
