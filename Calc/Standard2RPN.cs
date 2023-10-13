@@ -137,11 +137,12 @@ namespace Calc
 
         public static BigComplex Sqrt(BigDecimal a)
         {
+            BigDecimal origin = Abs(a);
             BigDecimal err = new(1, -101);
             BigDecimal pre = Abs(a);
-            while (Abs(a - pre * pre) > err)
+            while (Abs(origin - pre * pre) > err)
             {
-                pre = (a / pre + pre) / 2;
+                pre = (origin / pre + pre) / 2;
                 CancellationToken.ThrowIfCancellationRequested();
             }
             if (a < 0) return new(0, pre);
