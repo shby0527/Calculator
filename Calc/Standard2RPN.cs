@@ -120,6 +120,20 @@ namespace Calc
             return result;
         }
 
+        public static BigComplex Pow(BigComplex a, BigDecimal b)
+        {
+            if (b == 0) return 1;
+            BigComplex result = 1;
+            BigDecimal exp = Abs(b);
+            for (BigDecimal i = 1; i <= exp; i++)
+            {
+                result *= a;
+                CancellationToken.ThrowIfCancellationRequested();
+            }
+            if (b < 0) return 1 / result;
+            return result;
+        }
+
         public static BigDecimal Abs(BigDecimal a)
         {
             return a < 0 ? -a : a;
@@ -337,8 +351,8 @@ namespace Calc
                     return param[0].Real % param[1].Real;
                 }) },
                 { "^", new OperatorInfo(3,OrderType.Right, OpType.Op,2,param => {
-                    if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
-                    return MyMath.Pow(param[0].Real, param[1].Real);
+                    if(param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return MyMath.Pow(param[0], param[1].Real);
                 }) },
                 { "!", new OperatorInfo(4,OrderType.Left, OpType.Op,1,param => {
                     if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
