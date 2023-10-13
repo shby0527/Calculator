@@ -38,7 +38,7 @@ public readonly struct BigComplex
     {
         this.Real = real;
         this.Imaginary = imaginary;
-        this.Modulus = MyMath.Sqrt(MyMath.Pow(real, 2) + MyMath.Pow(imaginary, 2));
+        this.Modulus = MyMath.Sqrt(MyMath.Pow(real, 2) + MyMath.Pow(imaginary, 2)).Real;
         this.Argument = Math.Atan2((double)imaginary, (double)real);
     }
 
