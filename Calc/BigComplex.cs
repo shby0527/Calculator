@@ -19,10 +19,23 @@ public readonly struct BigComplex
     public BigDecimal Imaginary { get; init; }
 
     // 模长
-    public BigDecimal Modulus { get; init; }
+    public BigDecimal Modulus
+    {
+
+        get
+        {
+            return MyMath.Sqrt(MyMath.Pow(this.Real, 2) + MyMath.Pow(this.Imaginary, 2)).Real;
+        }
+    }
 
     // 相角
-    public BigDecimal Argument { get; init; }
+    public BigDecimal Argument
+    {
+        get
+        {
+            return Math.Atan2((double)this.Imaginary, (double)this.Real);
+        }
+    }
 
     // 是否是复数
     public bool IsComplex
@@ -38,17 +51,6 @@ public readonly struct BigComplex
     {
         this.Real = real;
         this.Imaginary = imaginary;
-        this.Modulus = MyMath.Sqrt(MyMath.Pow(real, 2) + MyMath.Pow(imaginary, 2)).Real;
-        this.Argument = Math.Atan2((double)imaginary, (double)real);
-    }
-
-    // 通过相角模长确定复数
-    public BigComplex(BigDecimal modulus, BigDecimal argument, bool _)
-    {
-        this.Modulus = modulus;
-        this.Argument = argument;
-        this.Real = modulus * MyMath.Cos(argument);
-        this.Imaginary = modulus * MyMath.Sin(argument);
     }
 
     public bool Equals(BigComplex other)
