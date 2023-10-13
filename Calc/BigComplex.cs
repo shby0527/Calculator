@@ -173,4 +173,14 @@ public readonly struct BigComplex
             return (Real.GetHashCode() * 397) ^ Imaginary.GetHashCode();
         }
     }
+
+    public static bool operator ==(BigComplex left, BigComplex right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(BigComplex left, BigComplex right)
+    {
+        return !left.Equals(right);
+    }
 }
