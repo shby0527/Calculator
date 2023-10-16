@@ -152,15 +152,15 @@ namespace Calc
         public static BigComplex Sqrt(BigDecimal a)
         {
             BigDecimal origin = Abs(a);
-            BigDecimal err = new(1, -101);
+            BigDecimal err = new(1, -150);
             BigDecimal pre = Abs(a);
             while (Abs(origin - pre * pre) > err)
             {
                 pre = (origin / pre + pre) / 2;
                 CancellationToken.ThrowIfCancellationRequested();
             }
-            if (a < 0) return new(0, pre.Truncate(100));
-            return pre.Truncate(100);
+            if (a < 0) return new(0, pre.Truncate(140));
+            return pre.Truncate(140);
         }
 
 
@@ -169,15 +169,15 @@ namespace Calc
 
             if (Abs(x) > 1)
             {
-                return (Pi / 2 - Arctan(1 / x)).Truncate(100);
+                return (Pi / 2 - Arctan(1 / x)).Truncate(140);
             }
             else if (Abs(x) == 1)
             {
-                return (2 * Arctan((Sqrt(1 + x * x).Real - 1) / x)).Truncate(100);
+                return (2 * Arctan((Sqrt(1 + x * x).Real - 1) / x)).Truncate(140);
             }
             else
             {
-                BigDecimal err = new(1, -101);
+                BigDecimal err = new(1, -150);
                 BigDecimal s = 0;
                 BigDecimal bf = 0;
                 BigInteger i = 0;
@@ -205,7 +205,7 @@ namespace Calc
                     }
                     i++;
                 }
-                return s.Truncate(100);
+                return s.Truncate(140);
             }
         }
 
@@ -218,19 +218,19 @@ namespace Calc
             }
             if (x == 0 && y > 0)
             {
-                return (Pi / 2).Truncate(100);
+                return (Pi / 2).Truncate(140);
             }
             if (x == 0 && y < 0)
             {
-                return (-Pi / 2).Truncate(100);
+                return (-Pi / 2).Truncate(140);
             }
             if (x < 0 && y >= 0)
             {
-                return Arctan(y / x) + Pi.Truncate(100);
+                return Arctan(y / x) + Pi.Truncate(140);
             }
             if (x < 0 && y < 0)
             {
-                return Arctan(y / x) - Pi.Truncate(100);
+                return Arctan(y / x) - Pi.Truncate(140);
             }
             return 0;
         }
@@ -245,7 +245,7 @@ namespace Calc
 
         public static BigDecimal Sin(BigDecimal v)
         {
-            BigDecimal err = new(1, -101);
+            BigDecimal err = new(1, -150);
             int sign = 1;
             BigDecimal arg = v;
             if (arg < 0)
@@ -286,13 +286,13 @@ namespace Calc
                 }
                 i++;
             }
-            return s.Truncate(100) * sign;
+            return s.Truncate(140) * sign;
         }
 
 
         public static BigDecimal Cos(BigDecimal v)
         {
-            BigDecimal err = new(1, -101);
+            BigDecimal err = new(1, -150);
             int sign = 1;
             BigDecimal arg = v;
             if (arg < 0)
@@ -334,7 +334,7 @@ namespace Calc
 
                 i++;
             }
-            return s.Truncate(100) * sign;
+            return s.Truncate(140) * sign;
         }
 
         public static BigDecimal Tan(BigDecimal v)
@@ -345,7 +345,7 @@ namespace Calc
 
         public static BigDecimal Ln(BigDecimal v)
         {
-            BigDecimal err = new(1, -101);
+            BigDecimal err = new(1, -150);
             BigDecimal s = 0;
             BigDecimal sv = (v - 1) / (v + 1);
             BigDecimal bf = 0;
@@ -367,7 +367,7 @@ namespace Calc
                 }
                 i++;
             }
-            return (2 * s).Truncate(100);
+            return (2 * s).Truncate(140);
         }
 
         public static readonly BigDecimal Pi;
