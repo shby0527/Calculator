@@ -152,13 +152,13 @@ public readonly struct BigComplex
     public override string ToString()
     {
         StringBuilder sb = new();
-        if (this.Real != 0) sb.Append(this.Real);
+        if (this.Real != 0) sb.Append(this.Real.Truncate(100));
         if (this.Imaginary != 0)
         {
             if (this.Imaginary < 0)
             {
                 if (this.Imaginary == -1) sb.Append('-');
-                else sb.Append(this.Imaginary);
+                else sb.Append(this.Imaginary.Truncate(100));
             }
             else
             {
@@ -166,7 +166,7 @@ public readonly struct BigComplex
                 {
                     sb.Append('+');
                 }
-                if (this.Imaginary != 1) sb.Append(this.Imaginary);
+                if (this.Imaginary != 1) sb.Append(this.Imaginary.Truncate(100));
 
             }
             sb.Append('i');
