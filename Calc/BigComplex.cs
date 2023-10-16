@@ -18,13 +18,17 @@ public readonly struct BigComplex
     // 虚部
     public BigDecimal Imaginary { get; init; }
 
+    private readonly Lazy<BigDecimal> _modulus;
+
+    private readonly Lazy<BigDecimal> _argument;
+
     // 模长
     public BigDecimal Modulus
     {
 
         get
         {
-            return MyMath.Sqrt(MyMath.Pow(this.Real, 2) + MyMath.Pow(this.Imaginary, 2)).Real;
+            return _modulus.Value;
         }
     }
 
@@ -33,7 +37,7 @@ public readonly struct BigComplex
     {
         get
         {
-            return MyMath.Arctan2(this.Imaginary, this.Real);
+            return _argument.Value;
         }
     }
 
@@ -51,6 +55,8 @@ public readonly struct BigComplex
     {
         this.Real = real;
         this.Imaginary = imaginary;
+        this._modulus = new Lazy<BigDecimal>(() => MyMath.Sqrt(MyMath.Pow(real, 2) + MyMath.Pow(imaginary, 2)).Real);
+        this._argument = new Lazy<BigDecimal>(() => MyMath.Arctan2(imaginary, real));
     }
 
     public bool Equals(BigComplex other)
