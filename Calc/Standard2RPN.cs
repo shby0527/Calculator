@@ -169,15 +169,15 @@ namespace Calc
 
             if (Abs(x) > 1)
             {
-                return (Pi / 2 - Arctan(1 / x)).Truncate(140);
+                return (Pi / 2 - Arctan(1 / x)).Truncate(100);
             }
-            else if (Abs(x) == 1)
+            else if (Abs(x) >= 0.1)
             {
-                return (2 * Arctan((Sqrt(1 + x * x).Real - 1) / x)).Truncate(140);
+                return (2 * Arctan((Sqrt(1 + x * x).Real - 1) / x)).Truncate(100);
             }
             else
             {
-                BigDecimal err = new(1, -150);
+                BigDecimal err = new(1, -101);
                 BigDecimal s = 0;
                 BigDecimal bf = 0;
                 BigInteger i = 0;
@@ -205,7 +205,7 @@ namespace Calc
                     }
                     i++;
                 }
-                return s.Truncate(140);
+                return s.Truncate(100);
             }
         }
 
