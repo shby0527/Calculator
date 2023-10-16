@@ -164,11 +164,83 @@ namespace Calc
         }
 
 
+        public static BigDecimal Arctan(BigDecimal x)
+        {
+
+            if (Abs(x) > 1)
+            {
+                return (Pi / 2 - Arctan(1 / x)).Truncate(100);
+            }
+            else if (Abs(x) == 1)
+            {
+                return (2 * Arctan((Sqrt(1 + x * x).Real - 1) / x)).Truncate(100);
+            }
+            else
+            {
+                BigDecimal err = new(1, -101);
+                BigDecimal s = 0;
+                BigDecimal bf = 0;
+                BigInteger i = 0;
+                while (true)
+                {
+                    CancellationToken.ThrowIfCancellationRequested();
+                    BigInteger mx = 2 * i + 1;
+                    BigDecimal vf = 2 * i + 1;
+                    BigDecimal vt = Pow(x, mx);
+                    if (i % 2 == 0)
+                    {
+                        s += vt / vf;
+                        if (Abs(s - bf) < err)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            bf = s;
+                        }
+                    }
+                    else
+                    {
+                        s -= vt / vf;
+                    }
+                    i++;
+                }
+                return s.Truncate(100);
+            }
+        }
+
+
+        public static BigDecimal Arctan2(BigDecimal y, BigDecimal x)
+        {
+            if (x > 0)
+            {
+                return Arctan(y / x);
+            }
+            if (x == 0 && y > 0)
+            {
+                return (Pi / 2).Truncate(100);
+            }
+            if (x == 0 && y < 0)
+            {
+                return (-Pi / 2).Truncate(100);
+            }
+            if (x < 0 && y >= 0)
+            {
+                return Arctan(y / x) + Pi.Truncate(100);
+            }
+            if (x < 0 && y < 0)
+            {
+                return Arctan(y / x) - Pi.Truncate(100);
+            }
+            return 0;
+        }
+
+
         public static BigComplex Sqrt(BigComplex a)
         {
             if (!a.IsComplex) return Sqrt(a.Real);
 
-            return Sqrt(a.Modulus) * new BigComplex(Cos(a.Argument / 2).Truncate(15), Sin(a.Argument / 2).Truncate(15));
+            return Sqrt(a.Modulus) * new BigComplex(Cos(a.Argument / 2), Sin(a.Argument / 2));
         }
 
         public static BigDecimal Sin(BigDecimal v)
@@ -404,6 +476,10 @@ namespace Calc
                 { "tan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
                     if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
                     return   MyMath.Tan(param[0].Real);
+                })},
+                { "arctan",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
+                    if(param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
+                    return   MyMath.Arctan(param[0].Real);
                 })},
                 { "abs",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => BigComplex.Abs(param[0]))},
                 { "C",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{

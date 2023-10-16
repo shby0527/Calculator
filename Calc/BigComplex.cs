@@ -28,12 +28,12 @@ public readonly struct BigComplex
         }
     }
 
-    // 相角
+    // 幅角
     public BigDecimal Argument
     {
         get
         {
-            return Math.Atan2((double)this.Imaginary, (double)this.Real);
+            return MyMath.Arctan2(this.Imaginary, this.Real);
         }
     }
 
