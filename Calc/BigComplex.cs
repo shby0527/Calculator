@@ -12,6 +12,13 @@ public readonly struct BigComplex
     : IEquatable<BigComplex>
 {
 
+    public static bool ShowModulus { get; set; }
+
+    static BigComplex()
+    {
+        ShowModulus = false;
+    }
+
     // 实部
     public BigDecimal Real { get; init; }
 
@@ -158,26 +165,45 @@ public readonly struct BigComplex
     public override string ToString()
     {
         StringBuilder sb = new();
-        if (this.Real != 0) sb.Append(this.Real.Truncate(100));
-        if (this.Imaginary != 0)
+        if (!ShowModulus)
         {
-            if (this.Imaginary < 0)
+            if (this.Real != 0) sb.Append(this.Real.Truncate(100));
+            if (this.Imaginary != 0)
             {
-                if (this.Imaginary == -1) sb.Append('-');
-                else sb.Append(this.Imaginary.Truncate(100));
+                if (this.Imaginary < 0)
+                {
+                    if (this.Imaginary == -1) sb.Append('-');
+                    else sb.Append(this.Imaginary.Truncate(100));
+                }
+                else
+                {
+                    if (this.Real != 0)
+                    {
+                        sb.Append('+');
+                    }
+                    if (this.Imaginary != 1) sb.Append(this.Imaginary.Truncate(100));
+
+                }
+                sb.Append('i');
+            }
+            if (this.Real == 0 && this.Imaginary == 0) sb.Append('0');
+        }
+        else
+        {
+            if (this.Modulus == 0) return "0";
+            sb.Append(this.Modulus)
+            .Append("e^(i(");
+            if (this.Argument == 0)
+            {
+                sb.Append("2kπ))");
             }
             else
             {
-                if (this.Real != 0)
-                {
-                    sb.Append('+');
-                }
-                if (this.Imaginary != 1) sb.Append(this.Imaginary.Truncate(100));
-
+                sb.Append(this.Argument)
+                .Append("+2kπ))");
             }
-            sb.Append('i');
+
         }
-        if (this.Real == 0 && this.Imaginary == 0) sb.Append('0');
         return sb.ToString();
     }
 

@@ -29,6 +29,16 @@ namespace Calc
                     {
                         break;
                     }
+                    if (line == "set modulus=true")
+                    {
+                        BigComplex.ShowModulus = true;
+                        break;
+                    }
+                    if (line == "set modulus=false")
+                    {
+                        BigComplex.ShowModulus = false;
+                        break;
+                    }
                     using (source = new())
                     {
                         Canceling = false;
