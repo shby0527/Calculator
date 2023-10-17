@@ -32,12 +32,13 @@ namespace Calc
                     if (line == "set modulus=true")
                     {
                         BigComplex.ShowModulus = true;
-                        break;
+                        Console.WriteLine("OK");
+                        continue;
                     }
                     if (line == "set modulus=false")
                     {
-                        BigComplex.ShowModulus = false;
-                        break;
+                        Console.WriteLine("OK");
+                        continue;
                     }
                     using (source = new())
                     {
