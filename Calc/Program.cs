@@ -37,6 +37,7 @@ namespace Calc
                     }
                     if (line == "set modulus=false")
                     {
+                        BigComplex.ShowModulus = false;
                         Console.WriteLine("OK");
                         continue;
                     }

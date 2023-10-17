@@ -191,8 +191,8 @@ public readonly struct BigComplex
         else
         {
             if (this.Modulus == 0) return "0";
-            sb.Append(this.Modulus)
-            .Append("e^(i(");
+            if (this.Modulus != 1) sb.Append(this.Modulus);
+            sb.Append("e^(i(");
             if (this.Argument == 0)
             {
                 sb.Append("2kπ))");
