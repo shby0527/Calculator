@@ -482,6 +482,7 @@ namespace Calc
                     return   MyMath.Arctan(param[0].Real);
                 })},
                 { "abs",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => BigComplex.Abs(param[0]))},
+                { "arg",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param => param[0].Argument)},
                 { "C",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{
                     if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
                     return MyMath.Combination(param[0].Real,param[1].Real);
