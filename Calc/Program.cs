@@ -29,18 +29,6 @@ namespace Calc
                     {
                         break;
                     }
-                    if (line == "set modulus=true")
-                    {
-                        BigComplex.ShowModulus = true;
-                        Console.WriteLine("OK");
-                        continue;
-                    }
-                    if (line == "set modulus=false")
-                    {
-                        BigComplex.ShowModulus = false;
-                        Console.WriteLine("OK");
-                        continue;
-                    }
                     using (source = new())
                     {
                         Canceling = false;
@@ -50,7 +38,14 @@ namespace Calc
                         //Console.WriteLine($"后缀表达式:{rpn}");
                         Stopwatch sw = new();
                         sw.Start();
-                        Console.WriteLine($"{rpn.GetFormattedOrigin()} = {rpn.Calc()}");
+                        if (rpn.IsCommand)
+                        {
+                            rpn.Exec();
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{rpn.GetFormattedOrigin()} = {rpn.Calc()}");
+                        }
                         sw.Stop();
                         Console.WriteLine($"计算总耗时：{sw.Elapsed}");
                         Canceling = true;

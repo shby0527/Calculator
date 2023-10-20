@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading;
@@ -394,6 +395,10 @@ namespace Calc
 
         private readonly IDictionary<string, OperatorInfo> _operator;
 
+        private readonly IDictionary<string, Action<string[]>> _cmd;
+
+        public bool IsCommand { get; private set; }
+
         public CancellationToken CancellationToken
         {
             set
@@ -501,6 +506,16 @@ namespace Calc
             _origin = input;
             Analyzer();
             Parser();
+            _cmd = new Dictionary<string, Action<string[]>>(){
+                {"set", arg => {
+                    if(arg[0] is "modulus" or "mo") {
+                        BigComplex.ShowModulus = bool.Parse(arg[2]);
+                    }else{
+                        throw new InvalidOperationException("参数无法识别");
+                    }
+                    Console.WriteLine("env changed ok");
+                }}
+            };
         }
 
         public Standard2RPN(string input, IDictionary<string, OperatorInfo> @operator)
@@ -563,6 +578,12 @@ namespace Calc
 
         private void Parser()
         {
+            if (_item.Count > 0 && string.Equals(_item[0], "command", StringComparison.OrdinalIgnoreCase))
+            {
+                IsCommand = true;
+                return;
+            }
+            IsCommand = false;
             // 调度场算法开始
             Stack<string> opt = new();
             int i = 0;
@@ -697,8 +718,26 @@ namespace Calc
             }
         }
 
+        public void Exec()
+        {
+            if (!IsCommand)
+            {
+                throw new InvalidOperationException("非命令，无法执行");
+            }
+            string[] cmdSeq = _item.ToArray()[2..];
+            if (!_cmd.ContainsKey(cmdSeq[0]))
+            {
+                throw new InvalidOperationException("不能识别的命令");
+            }
+            _cmd[cmdSeq[0]](cmdSeq[2..]);
+        }
+
         public BigComplex Calc()
         {
+            if (IsCommand)
+            {
+                throw new InvalidOperationException("命令无法被执行");
+            }
             Stack<BigComplex> dc = new();
             foreach (var item in _rpn)
             {
