@@ -478,7 +478,7 @@ namespace Calc
                 })},
                 { "log",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 2, param =>{
                     if(param[0].IsComplex || param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
-                    return MyMath.Log(param[1].Real,param[0].Real);
+                    return MyMath.Log(param[0].Real,param[1].Real);
                 })},
                 { "sqrt",new OperatorInfo(int.MaxValue - 1,OrderType.Left,OpType.Func, 1, param =>{
                     return MyMath.Sqrt(param[0]);
