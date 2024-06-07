@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Calc
 {
@@ -17,25 +15,25 @@ namespace Calc
     /// Author: Jan Christoph Bernack (contact: jc.bernack at gmail.com)
     /// License: public domain
     /// </summary>
-    [DebuggerDisplay("\\{{ToString(),nq}\\}")]
+    [DebuggerDisplay(@"\{{ToString(),nq}\}")]
     public readonly struct BigDecimal
         : IComparable
-        , IComparable<BigDecimal>
-        , IEquatable<BigDecimal>
+            , IComparable<BigDecimal>
+            , IEquatable<BigDecimal>
     {
         /// <summary>
         /// Sets the maximum precision of division operations.
         /// If AlwaysTruncate is set to true all operations are affected.
         /// </summary>
-        public static readonly int Precision = 500;
+        private const int Precision = 500;
 
-        public BigInteger Mantissa { get; init; }
-        public int Exponent { get; init; }
+        private BigInteger Mantissa { get; }
+        private int Exponent { get; }
 
         public BigDecimal(BigInteger mantissa, int exponent)
         {
-            int exp = exponent;
-            BigInteger man = mantissa;
+            var exp = exponent;
+            var man = mantissa;
             if (man.IsZero)
             {
                 exp = 0;
@@ -46,13 +44,12 @@ namespace Calc
                 while (remainder == 0)
                 {
                     var shortened = BigInteger.DivRem(man, 10, out remainder);
-                    if (remainder == 0)
-                    {
-                        man = shortened;
-                        exp++;
-                    }
+                    if (remainder != 0) continue;
+                    man = shortened;
+                    exp++;
                 }
             }
+
             Mantissa = man;
             Exponent = exp;
         }
@@ -61,39 +58,34 @@ namespace Calc
         /// Truncate the number to the given precision by removing the least significant digits.
         /// </summary>
         /// <returns>The truncated number</returns>
-        public BigDecimal Truncate(int precision)
+        public BigDecimal Truncate(int precision = Precision)
         {
-            BigInteger mantissa = Mantissa;
-            int exponent = Exponent;
+            var mantissa = Mantissa;
+            var exponent = Exponent;
             if (exponent >= 0) return new BigDecimal(mantissa, exponent);
-            int d = NumberOfDigits(mantissa);
+            var d = NumberOfDigits(mantissa);
             while (d > precision)
             {
                 mantissa /= 10;
                 exponent++;
                 d--;
             }
-            int td = NumberOfDigits(mantissa);
-            int k = td + exponent;
-            if (k < -precision)
-            {
+
+            var td = NumberOfDigits(mantissa);
+            var k = td + exponent;
+            return k < -precision
+                ?
                 // 小数位太多太多了,直接返回0
-                return new BigDecimal(BigInteger.Zero, 0);
-            }
-            return new BigDecimal(mantissa, exponent);
+                new BigDecimal(BigInteger.Zero, 0)
+                : new BigDecimal(mantissa, exponent);
         }
 
-        public BigDecimal Truncate()
-        {
-            return Truncate(Precision);
-        }
-
-        public BigDecimal Floor()
+        private BigDecimal Floor()
         {
             return Truncate(NumberOfDigits(Mantissa) + Exponent);
         }
 
-        public static int NumberOfDigits(BigInteger value)
+        private static int NumberOfDigits(BigInteger value)
         {
             return (int)Math.Ceiling(BigInteger.Log10(value * value.Sign));
         }
@@ -121,6 +113,7 @@ namespace Calc
                 scaleFactor *= 10;
                 mantissa = (BigInteger)(value * scaleFactor);
             }
+
             return new BigDecimal(mantissa, exponent);
         }
 
@@ -135,6 +128,7 @@ namespace Calc
                 scaleFactor *= 10;
                 mantissa = (BigInteger)(value * scaleFactor);
             }
+
             return new BigDecimal(mantissa, exponent);
         }
 
@@ -177,6 +171,7 @@ namespace Calc
                 if (index <= 0) return BigInteger.Zero;
                 return BigInteger.Parse(integer[0..index]);
             }
+
             return value.Mantissa * BigInteger.Pow(10, value.Exponent);
         }
 
@@ -233,9 +228,11 @@ namespace Calc
             {
                 exponentChange = 0;
             }
+
             var dividendMan = dividend.Mantissa;
             dividendMan *= BigInteger.Pow(10, exponentChange);
-            return new BigDecimal(dividendMan / divisor.Mantissa, dividend.Exponent - divisor.Exponent - exponentChange);
+            return new BigDecimal(dividendMan / divisor.Mantissa,
+                dividend.Exponent - divisor.Exponent - exponentChange);
         }
 
         public static BigDecimal operator %(BigDecimal left, BigDecimal right)
@@ -255,22 +252,30 @@ namespace Calc
 
         public static bool operator <(BigDecimal left, BigDecimal right)
         {
-            return left.Exponent > right.Exponent ? AlignExponent(left, right) < right.Mantissa : left.Mantissa < AlignExponent(right, left);
+            return left.Exponent > right.Exponent
+                ? AlignExponent(left, right) < right.Mantissa
+                : left.Mantissa < AlignExponent(right, left);
         }
 
         public static bool operator >(BigDecimal left, BigDecimal right)
         {
-            return left.Exponent > right.Exponent ? AlignExponent(left, right) > right.Mantissa : left.Mantissa > AlignExponent(right, left);
+            return left.Exponent > right.Exponent
+                ? AlignExponent(left, right) > right.Mantissa
+                : left.Mantissa > AlignExponent(right, left);
         }
 
         public static bool operator <=(BigDecimal left, BigDecimal right)
         {
-            return left.Exponent > right.Exponent ? AlignExponent(left, right) <= right.Mantissa : left.Mantissa <= AlignExponent(right, left);
+            return left.Exponent > right.Exponent
+                ? AlignExponent(left, right) <= right.Mantissa
+                : left.Mantissa <= AlignExponent(right, left);
         }
 
         public static bool operator >=(BigDecimal left, BigDecimal right)
         {
-            return left.Exponent > right.Exponent ? AlignExponent(left, right) >= right.Mantissa : left.Mantissa >= AlignExponent(right, left);
+            return left.Exponent > right.Exponent
+                ? AlignExponent(left, right) >= right.Mantissa
+                : left.Mantissa >= AlignExponent(right, left);
         }
 
         /// <summary>
@@ -295,6 +300,7 @@ namespace Calc
                 tmp *= Math.Exp(diff);
                 exponent -= diff;
             }
+
             return tmp * Math.Exp(exponent);
         }
 
@@ -307,6 +313,7 @@ namespace Calc
                 tmp *= Math.Pow(basis, diff);
                 exponent -= diff;
             }
+
             return tmp * Math.Pow(basis, exponent);
         }
 
@@ -315,64 +322,73 @@ namespace Calc
         public override string ToString()
         {
             StringBuilder sb = new();
-            string main = BigInteger.Abs(Mantissa).ToString();
+            var main = BigInteger.Abs(Mantissa).ToString();
             if (Mantissa.Sign < 0) sb.Append('-');
-            if (Exponent == 0)
+            switch (Exponent)
             {
-                sb.Append(main);
-                return sb.ToString();
-            }
-            if (Exponent is > 0 and < 10)
-            {
-                sb.Append(main);
-                for (int i = 0; i < Exponent; i++)
+                case 0:
+                    sb.Append(main);
+                    return sb.ToString();
+                case > 0 and < 10:
                 {
-                    sb.Append('0');
+                    sb.Append(main);
+                    for (var i = 0; i < Exponent; i++)
+                    {
+                        sb.Append('0');
+                    }
+
+                    return sb.ToString();
                 }
-                return sb.ToString();
-            }
-            if (Exponent >= 10)
-            {
-                sb.Append(main[0]);
-                if (main.Length > 1)
+                case >= 10:
                 {
-                    sb.Append('.');
-                    sb.Append(main[1..]);
+                    sb.Append(main[0]);
+                    if (main.Length > 1)
+                    {
+                        sb.Append('.');
+                        sb.Append(main[1..]);
+                    }
+
+                    sb.Append('E').Append(Exponent + main.Length - 1);
+                    return sb.ToString();
                 }
-                sb.Append('E').Append(Exponent + main.Length - 1);
-                return sb.ToString();
             }
-            int absExp = Math.Abs(Exponent);
+
+            var absExp = Math.Abs(Exponent);
             if (main.Length == absExp)
             {
                 sb.Append("0.").Append(main);
                 return sb.ToString();
             }
+
             if (main.Length > absExp)
             {
-                int index = main.Length - absExp;
+                var index = main.Length - absExp;
                 sb.Append(main[0..index]);
                 sb.Append('.')
                     .Append(main[index..]);
                 return sb.ToString();
             }
+
             // 负数
             if (absExp is > 0 and < 15)
             {
-                int zeroCount = absExp - main.Length;
+                var zeroCount = absExp - main.Length;
                 sb.Append("0.");
-                for (int i = 0; i < zeroCount; i++)
+                for (var i = 0; i < zeroCount; i++)
                 {
                     sb.Append('0');
                 }
+
                 sb.Append(main);
                 return sb.ToString();
             }
+
             sb.Append(main[0]);
             if (main.Length > 1)
             {
                 sb.Append('.').Append(main[1..]);
             }
+
             sb.Append('E').Append(Exponent + main.Length - 1);
             return sb.ToString();
         }
@@ -388,6 +404,7 @@ namespace Calc
             {
                 return false;
             }
+
             return obj is BigDecimal @decimal && Equals(@decimal);
         }
 
@@ -401,11 +418,12 @@ namespace Calc
 
         public int CompareTo(object obj)
         {
-            if (obj is null || !(obj is BigDecimal))
+            if (obj is not BigDecimal bigDecimal)
             {
                 throw new ArgumentException("obj is null", nameof(obj));
             }
-            return CompareTo((BigDecimal)obj);
+
+            return CompareTo(bigDecimal);
         }
 
         public int CompareTo(BigDecimal other)
@@ -418,26 +436,27 @@ namespace Calc
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new FormatException();
-            string numberCharacters = "-0.1234567890";
+            const string numberCharacters = "-0.1234567890";
 
-            NumberFormatInfo BigDecimalNumberFormatInfo = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
-            int exponent = 0;
-            int decimalPlace = 0;
-            bool isNegative = false;
+            var bigDecimalNumberFormatInfo =
+                (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+            var exponent = 0;
+            var isNegative = false;
             string localInput = new(s.Trim().Where(c => numberCharacters.Contains(c)).ToArray());
 
-            if (localInput.StartsWith(BigDecimalNumberFormatInfo.NegativeSign))
+            if (localInput.StartsWith(bigDecimalNumberFormatInfo.NegativeSign))
             {
                 isNegative = true;
-                localInput = localInput.Replace(BigDecimalNumberFormatInfo.NegativeSign, string.Empty);
+                localInput = localInput.Replace(bigDecimalNumberFormatInfo.NegativeSign, string.Empty);
             }
 
-            if (localInput.Contains(BigDecimalNumberFormatInfo.NumberDecimalSeparator))
+            if (localInput.Contains(bigDecimalNumberFormatInfo.NumberDecimalSeparator))
             {
-                decimalPlace = localInput.IndexOf(BigDecimalNumberFormatInfo.NumberDecimalSeparator);
+                var decimalPlace = localInput.IndexOf(bigDecimalNumberFormatInfo.NumberDecimalSeparator,
+                    StringComparison.Ordinal);
 
                 exponent = ((decimalPlace + 1) - (localInput.Length));
-                localInput = localInput.Replace(BigDecimalNumberFormatInfo.NumberDecimalSeparator, string.Empty);
+                localInput = localInput.Replace(bigDecimalNumberFormatInfo.NumberDecimalSeparator, string.Empty);
             }
 
             BigInteger mantessa = BigInteger.Parse(localInput);
