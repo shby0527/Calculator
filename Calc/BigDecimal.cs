@@ -90,6 +90,9 @@ namespace Calc
             return (int)Math.Ceiling(BigInteger.Log10(value * value.Sign));
         }
 
+
+        public bool IsInteger => Exponent >= 0;
+
         #region Conversions
 
         public static implicit operator BigDecimal(int value)

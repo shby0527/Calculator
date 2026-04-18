@@ -104,32 +104,87 @@ namespace Calc
 
         public static BigDecimal Pow(BigDecimal a, BigDecimal b)
         {
+            CancellationToken.ThrowIfCancellationRequested();
+
+            // 边界情况1：任何数的0次幂 = 1
+            if (b == 0)
+                return 1;
+
+            // 边界情况2：0的正次幂 = 0
+            if (a == 0 && b > 0)
+                return 0;
+
+            // 边界情况3：负数底数 + 小数次幂 → 实数域无意义，报错
+            if (a < 0 && !b.IsInteger)
+                throw new InvalidOperationException("负数不能进行小数次幂运算（实数域）");
+
+            // 核心公式：a^b = e^(b * ln(a))
+            BigDecimal result = Exp(b * Ln(Abs(a)));
+
+            // 负数底数的整数次幂：添加负号
+            if (a < 0 && IsOddInteger(b))
+                result = -result;
+
+            return result.Truncate(100);
+        }
+
+
+        // 判断是否为奇数
+        private static bool IsOddInteger(BigDecimal value)
+        {
+            return value.IsInteger && (BigInteger)value % 2 != 0;
+        }
+
+        public static BigDecimal SqrtN(BigDecimal a, BigDecimal n)
+        {
+            // 基础校验
+            if (n == 0)
+                throw new InvalidOperationException("开方次数不能为0");
+            if (a < 0 && n % 2 == 0)
+                throw new InvalidOperationException("负数不能开偶次方");
+
+            // 高精度 N 次方根：e^(ln(a)/n)
+            return Exp(Ln(a) / n);
+        }
+
+
+        // 旧代码：仅支持 整数次幂（b=2、3、-1），小数次幂直接失效！
+        public static BigDecimal Pow2(BigDecimal a, BigDecimal b)
+        {
             if (b == 0) return 1;
             BigDecimal result = 1;
             BigDecimal exp = Abs(b);
             for (BigDecimal i = 1; i <= exp; i++)
             {
                 result *= a;
-                CancellationToken.ThrowIfCancellationRequested();
-            }
+            } // 循环累乘，只认整数
 
-            if (b < 0) return 1 / result;
-            return result;
+            return b < 0 ? 1 / result : result;
         }
 
-        public static BigComplex Pow(BigComplex a, BigDecimal b)
+
+        public static BigDecimal Exp(BigDecimal x)
         {
-            if (b == 0) return 1;
-            BigComplex result = 1;
-            var exp = Abs(b);
-            for (BigDecimal i = 1; i <= exp; i++)
+            // 精度阈值：10^-101，和 Ln 保持一致
+            BigDecimal err = new(1, -101);
+            BigDecimal sum = 1; // 级数累加和
+            BigDecimal term = 1; // 每一项的值
+            BigDecimal k = 0; // 迭代计数
+
+            while (true)
             {
-                result *= a;
                 CancellationToken.ThrowIfCancellationRequested();
+                k += 1;
+                // 泰勒级数递推公式：term = term * x / k，比直接算阶乘更快
+                term = term * x / k;
+                sum += term;
+
+                // 误差小于阈值，停止迭代
+                if (Abs(term) < err)
+                    break;
             }
 
-            if (b < 0) return 1 / result;
-            return result;
+            return sum.Truncate(100);
         }
 
         private static BigDecimal Abs(BigDecimal a)
@@ -183,7 +238,7 @@ namespace Calc
                     CancellationToken.ThrowIfCancellationRequested();
                     BigInteger mx = 2 * i + 1;
                     BigDecimal vf = 2 * i + 1;
-                    BigDecimal vt = Pow(x, mx);
+                    BigDecimal vt = Pow2(x, mx);
                     if (i % 2 == 0)
                     {
                         s += vt / vf;
@@ -273,7 +328,7 @@ namespace Calc
                 CancellationToken.ThrowIfCancellationRequested();
                 BigInteger mx = 2 * i + 1;
                 BigDecimal vf = Factorial(mx);
-                BigDecimal vt = Pow(arg, mx);
+                BigDecimal vt = Pow2(arg, mx);
                 if (i % 2 == 0)
                 {
                     s += vt / vf;
@@ -324,7 +379,7 @@ namespace Calc
                 CancellationToken.ThrowIfCancellationRequested();
                 BigInteger mx = 2 * i;
                 BigDecimal vf = Factorial(mx);
-                BigDecimal vt = Pow(arg, mx);
+                BigDecimal vt = Pow2(arg, mx);
                 if (i % 2 == 0)
                 {
                     s += vt / vf;
@@ -370,7 +425,7 @@ namespace Calc
             {
                 CancellationToken.ThrowIfCancellationRequested();
                 BigDecimal vm = 2 * i + 1;
-                BigDecimal vt = Pow(sv, vm);
+                BigDecimal vt = Pow2(sv, vm);
                 BigDecimal vf = vm;
                 s += vt / vf;
                 if (Abs(s - bf) < err)
@@ -487,8 +542,9 @@ namespace Calc
                 {
                     "^", new OperatorInfo(3, OrderType.Right, OpType.Op, 2, param =>
                     {
-                        if (param[1].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
-                        return MyMath.Pow(param[0], param[1].Real);
+                        if (param[1].IsComplex || param[0].IsComplex)
+                            throw new InvalidOperationException("Complex Can Not do this");
+                        return MyMath.Pow(param[0].Real, param[1].Real);
                     })
                 },
                 {
@@ -546,7 +602,7 @@ namespace Calc
                     {
                         if (param[0].IsComplex || param[1].IsComplex)
                             throw new InvalidOperationException("Complex Can Not do this");
-                        return Math.Pow((double)param[0].Real, 1 / (double)param[1].Real);
+                        return MyMath.SqrtN(param[0].Real, param[1].Real);
                     })
                 },
                 {
