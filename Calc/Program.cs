@@ -34,8 +34,6 @@ namespace Calc
                         _canceling = false;
                         Standard2Rpn rpn = line;
                         Standard2Rpn.CancellationToken = _source.Token;
-                        //Console.WriteLine(rpn.GetOrigin());
-                        //Console.WriteLine($"后缀表达式:{rpn}");
                         Stopwatch sw = new();
                         sw.Start();
                         if (rpn.IsCommand)
