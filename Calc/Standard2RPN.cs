@@ -118,12 +118,14 @@ namespace Calc
             if (a < 0 && !b.IsInteger)
                 throw new InvalidOperationException("负数不能进行小数次幂运算（实数域）");
 
+            if (b.IsInteger)
+            {
+                //整数次幂，使用普通累乘
+                return Pow2(a, b);
+            }
+
             // 核心公式：a^b = e^(b * ln(a))
             BigDecimal result = Exp(b * Ln(Abs(a)));
-
-            // 负数底数的整数次幂：添加负号
-            if (a < 0 && IsOddInteger(b))
-                result = -result;
 
             return result.Truncate(100);
         }
