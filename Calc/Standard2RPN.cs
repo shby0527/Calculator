@@ -131,12 +131,6 @@ namespace Calc
         }
 
 
-        // 判断是否为奇数
-        private static bool IsOddInteger(BigDecimal value)
-        {
-            return value.IsInteger && (BigInteger)value % 2 != 0;
-        }
-
         public static BigDecimal SqrtN(BigDecimal a, BigDecimal n)
         {
             // 基础校验
@@ -410,6 +404,8 @@ namespace Calc
             return Sin(v) / Cos(v);
         }
 
+        public static BigComplex LnComplex(BigComplex v) =>
+            v.IsComplex ? (Ln(v.Modulus) + new BigComplex(0, 1) * v.Argument) : Ln(v.Real);
 
         public static BigDecimal Ln(BigDecimal v)
         {
@@ -445,14 +441,14 @@ namespace Calc
             return (2 * s).Truncate(100);
         }
 
-        public static BigDecimal Log10(BigDecimal v)
+        public static BigComplex Log10(BigComplex v)
         {
-            return Ln(v) / Ln(10);
+            return LnComplex(v) / LnComplex(10);
         }
 
-        public static BigDecimal Log(BigDecimal a, BigDecimal b)
+        public static BigComplex Log(BigComplex a, BigComplex b)
         {
-            return Ln(b) / Ln(a);
+            return LnComplex(b) / LnComplex(a);
         }
 
         public static readonly BigDecimal Pi;
@@ -573,26 +569,18 @@ namespace Calc
                     })
                 },
                 {
-                    "lg", new OperatorInfo(int.MaxValue - 1, OrderType.Left, OpType.Func, 1, param =>
-                    {
-                        if (param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
-                        return MyMath.Log10(param[0].Real);
-                    })
+                    "lg",
+                    new OperatorInfo(int.MaxValue - 1, OrderType.Left, OpType.Func, 1, param => MyMath.Log10(param[0]))
                 },
                 {
-                    "ln", new OperatorInfo(int.MaxValue - 1, OrderType.Left, OpType.Func, 1, param =>
-                    {
-                        if (param[0].IsComplex) throw new InvalidOperationException("Complex Can Not do this");
-                        return MyMath.Ln(param[0].Real);
-                    })
+                    "ln",
+                    new OperatorInfo(int.MaxValue - 1, OrderType.Left, OpType.Func, 1,
+                        param => MyMath.LnComplex(param[0]))
                 },
                 {
-                    "log", new OperatorInfo(int.MaxValue - 1, OrderType.Left, OpType.Func, 2, param =>
-                    {
-                        if (param[0].IsComplex || param[1].IsComplex)
-                            throw new InvalidOperationException("Complex Can Not do this");
-                        return MyMath.Log(param[0].Real, param[1].Real);
-                    })
+                    "log",
+                    new OperatorInfo(int.MaxValue - 1, OrderType.Left, OpType.Func, 2,
+                        param => MyMath.Log(param[0], param[1]))
                 },
                 {
                     "sqrt",
